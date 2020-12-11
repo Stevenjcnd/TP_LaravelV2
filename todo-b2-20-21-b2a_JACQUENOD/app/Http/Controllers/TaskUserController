@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Http\Controllers;
+use App\Models\{Task, TaskUser};
+use Illuminate\Http\Request;
+
+class TaskUserController extends Controller
+{
+    //
+
+    /**
+     * Ajoute un utilisateur dans un board en utilisant le modèle pivot TaskUser
+     *
+     * @param Task $task pour lequel on ajoute l'utilisateur
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request, Task $task) {
+        $validatedData = $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
+        ]);
+        $taskUser = new Taskuser(); 
+        $taskUser->user_id = $validatedData['user_id']; 
+        $taskUser->task_id = $task->id; 
+        $taskUser->save(); 
+        return redirect(route('tasks.show', $task));
+    }
+
+
+    public function destroy(TaskUser $taskUser) { 
+        $task = $taskUser->task;
+        $taskUser->delete();
+        return redirect(route('tasks.show', $task));
+    }
+
+}
